@@ -2,5 +2,6 @@
 ## Database
 ### Design Approach
 - SQL and RDBMS
-### Conceptual ERD
-![Conceptual ERD](database/conceptualERD.png)
+### Entity Relationship Diagram
+#### Without booking feature
+![ERD-WITHOUT_BOOKING](database/medapp.png)
