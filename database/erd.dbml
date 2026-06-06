@@ -1,0 +1,334 @@
+Table users{
+  id string [pk]
+  email varchar [unique]
+  phone varchar [unique]
+  password_hash varchar
+  status enum [default: 'pending']
+  is_email_verified bool [default: 'false']
+  is_phone_verified bool [default: 'false']
+  role enum [default: 'patient']
+  created_at datetime
+  updated_at datetime  
+}
+
+Table patient_profiles{
+  id string [pk]
+  user string [ref: - users.id]
+  first_name varchar
+  last_name varchar
+  dob date
+  gender enum
+  blood_group enum [null]
+  street varchar [null]
+  city varchar [null]
+  state varchar [null]
+  country varchar [null]
+  postal_code varchar [null]
+  created_at datetime
+  updated_at datetime
+}
+
+Table admins{
+  id string [pk]
+  user string [ref: - users.id]
+  first_name varchar
+  last_name varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table hospitals{
+  id string [pk]
+  hospital_admin string [ref: - admins.id]
+  name varchar
+  email varchar [unique]
+  phone varchar [unique]
+  street varchar
+  city varchar
+  state varchar
+  country varchar
+  postal_code varchar
+  logo_url text [null]
+  cover_url text [null]
+  has_blood_bank bool [default: false]
+  weekday_start enum
+  weekday_end enum
+  is_off_saturday bool [default: false]
+  is_off_sunday bool [default: false]
+  is_off_monday bool [default: false]
+  is_off_tuesday bool [default: false]
+  is_off_wednesday bool [default: false]
+  is_off_thursday bool [default: false]
+  is_off_firday bool [default: false]
+  search_count integer [default: 0]
+  created_at datetime
+  updated_at datetime
+}
+
+Table awards{
+  id string [pk]
+  hospital string [ref: > hospitals.id]
+  title varchar [unique]
+  description text [null]
+  file_url text [null]
+  created_at datetime
+  updated_at datetime
+}
+
+Table doctor_categories{
+  id string [pk]
+  name varchar
+  description text [null]
+}
+
+Table doctors{
+  id string [pk]
+  hospital string [ref: > hospitals.id]
+  category string [ref: > doctor_categories.id]
+  first_name varchar
+  last_name varchar
+  email varchar [unique]
+  phone varchar [unique]
+  is_available bool [default: false]
+  created_at datetime
+  updated_at datetime
+}
+
+Table directors{
+  id string [pk]
+  hospital string [ref: > hospitals.id]
+  category string [ref: > doctor_categories.id, null]
+  first_name varchar
+  last_name varchar
+  email varchar [unique]
+  phone varchar [unique]
+  is_available bool [default: false]
+  created_at datetime
+  updated_at datetime
+}
+
+Table package_categories{
+  id string [pk]
+  name varchar
+  description text [null]
+}
+
+Table discounts{
+  id string [pk]
+  title varchar [unique]
+  description text [null]
+  percentage number
+}
+
+Table cashbacks{
+  id string [pk]
+  title varchar [unique]
+  description text [null]
+  amount number
+}
+
+Table health_packages{
+  id string [pk]
+  hospital string [ref: > hospitals.id]
+  category string [ref: > package_categories.id]
+  title varchar
+  description text [null]
+  total_tests integer [default: 0]
+  price number
+  image_url text [null]
+  is_active bool [default: true]
+  created_at datetime
+  updated_at datetime
+}
+
+Table package_discounts{
+  id string [pk]
+  package string [ref: > health_packages.id]
+  discount string [ref: > discounts.id]
+  is_active bool [default: true]
+  created_at datetime
+  updated_at datetime
+
+  Indexes {
+    (package, discount) [unique]
+  }
+}
+
+Table package_cashbacks{
+  id string [pk]
+  package string [ref: > health_packages.id]
+  cashback string [ref: > cashbacks.id]
+  is_active bool [default: true]
+  created_at datetime
+  updated_at datetime
+
+  Indexes {
+    (package, cashback) [unique]
+  }
+}
+
+Table procedures{
+  id string [pk]
+  hospital string [ref: > hospitals.id]
+  name varchar
+  description text [null]
+}
+
+Table investigations{
+  id string [pk]
+  hospital string [ref: > hospitals.id]
+  name varchar
+  description text [null]
+}
+
+Table consultations{
+  id string [pk]
+  doctor string [ref: - doctors.id]
+}
+
+Table facilities{
+  id string [pk]
+  hospital string [ref: > hospitals.id]
+  name varchar
+  description text [null]
+}
+
+Table services{
+  id string [pk]
+  hospital string [ref: > hospitals.id]
+  name varchar
+  description text [null]
+  created_at datetime
+  updated_at datetime
+}
+
+Table service_procedures{
+  id string [pk]
+  procedure string [ref: > procedures.id]
+  service string [ref: > services.id]
+  indexes {
+    (procedure, service) [unique]
+  }
+}
+
+Table service_investigations{
+  id string [pk]
+  investigation string [ref: > investigations.id]
+  service string [ref: > services.id]
+  indexes {
+    (investigation, service) [unique]
+  }
+}
+
+Table service_consultations{
+  id string [pk]
+  consultation string [ref: > consultations.id]
+  service string [ref: > services.id]
+  indexes {
+    (consultation, service) [unique]
+  }
+}
+
+Table service_facilities{
+  id string [pk]
+  facility string [ref: > facilities.id]
+  service string [ref: > services.id]
+  indexes {
+    (facility, service) [unique]
+  }
+}
+
+Table reviews{
+  id string [pk]
+  patient string [ref: > patient_profiles.id]
+  service string [ref: > services.id]
+  rating number
+  comment text [null]
+  created_at datetime
+  updated_at datetime
+  
+  indexes {
+    (patient, service) [unique]
+  }
+}
+
+table  advertisements{
+  id string [pk]
+  title varchar
+  description text [null]
+  imageUrl text
+  started_at datetime
+  terminated_at datetime
+  is_active bool [default: true]
+  created_at datetime
+  updated_at datetime
+}
+
+Table stripe_customers {
+  id string [pk]
+  user_id string [ref: - users.id, unique]
+  stripe_customer_id varchar [unique]
+  created_at datetime
+  updated_at datetime
+}
+
+Table stripe_connected_accounts {
+  id string [pk]
+  admin_id string [ref: - admins.id, unique]
+  stripe_account_id varchar [unique]
+  charges_enabled bool [default: false]
+  payouts_enabled bool [default: false]
+  details_submitted bool [default: false]
+  created_at datetime
+  updated_at datetime
+}
+
+Table payment_methods {
+  id string [pk]
+  user_id string [ref: > users.id]
+  stripe_payment_method_id varchar [unique]
+  card_brand varchar [null]
+  last4 varchar(4) [null]
+  exp_month int [null]
+  exp_year int [null]
+  is_default bool [default: false]
+  created_at datetime
+  updated_at datetime
+}
+
+Table bookings {
+  id string [pk]
+  patient_id string [ref: > patient_profiles.id]
+  service_id string [ref: > services.id]
+  status enum [default: 'pending']
+  amount_cents integer
+  currency varchar [default: 'usd']
+  created_at datetime
+  updated_at datetime
+}
+
+Table payment_intents {
+  id string [pk]
+  booking_id string [ref: > bookings.id] // One-to-Many (one booking can have failed payment attempts)
+  stripe_payment_intent_id varchar [unique] // e.g., pi_12345
+  amount_cents integer
+  status enum [default: 'requires_payment_method'] // Maps to Stripe's PI statuses: 'requires_confirmation', 'succeeded', 'failed', etc.
+  client_secret varchar // Needed for the frontend to confirm the payment
+  error_message text [null]
+  created_at datetime
+  updated_at datetime
+}
+
+// DiagramView Default {
+//   Tables {
+//     users
+//     patient_profiles
+//     admins
+//     stripe_customers
+//     stripe_connected_accounts
+//     payment_methods
+//     bookings
+//     payment_intents
+//     services
+//   }
+// }
