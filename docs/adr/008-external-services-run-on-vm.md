@@ -70,12 +70,24 @@ Usually better on a separate VM / container / managed cluster in production If y
 - geo-aware search
 - then Elasticsearch will likely deserve its own service boundary, even if your app is a modular monolith.
 ---
-### 4. Stripe
+### 4. Postgres
+they can run on the same VM — especially in:
+- development
+- small projects
+- cost-sensitive deployments
+- early-stage MVPs
+
+But in production, they are often separated into:
+- App VM / app server for the backend
+- Dedicated DB VM / managed database for PostgreSQL
+---
+### 5. Stripe
 - Stripe is a third-party external SaaS service
 - You do not host Stripe on your VM
 ---
 ## Decision
 - **Same VM:**
+    - Postgres
     - BullMQ
     - Redis
     - Elasticsearch

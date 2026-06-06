@@ -27,20 +27,23 @@
 3. Use of **Validation Pipe** & **DTO's**
 ---
 ## Integration requirements
-1. **Stripe:** Payment gateway
+1. **Postgres:** Primary Data Storage
+    - Relational Database Management System
+    - Transactional Consistency
+2. **Stripe:** Payment gateway
     - Create customer account
     - Create connected account
     - Add/remove payment method
     - Make payment intent
     - Pyament checkout
     - Refund
-2. **Elasticsearch:** Distributed search and analytics engine
+3. **Elasticsearch:** Distributed search and analytics engine
     - Global search across many entities
     - Search with ranks
     - Autocomplete/instant suggestions
     - Geo-aware features
-3. **Redis:** Cache management
-4. **BullMQ:** Background job queue / task processing system
+4. **Redis:** Cache management
+5. **BullMQ:** Background job queue / task processing system
     - Event-Driven Architecture
 ---
 ## Infrastructure requirements
