@@ -42,4 +42,11 @@
 3. **Redis:** Cache management
 4. **BullMQ:** Background job queue / task processing system
     - Event-Driven Architecture
+---
+## Infrastructure requirements
+1. **Docker:** Runs the container in development
+    - Elasticsearch
+    - Redis
+    - CI/CD
+---
 
