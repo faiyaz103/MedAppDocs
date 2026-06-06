@@ -134,7 +134,7 @@ Table health_packages{
   title varchar
   description text [null]
   total_tests integer [default: 0]
-  price number
+  price integer
   image_url text [null]
   is_active bool [default: true]
   created_at datetime
@@ -198,6 +198,9 @@ Table services{
   hospital string [ref: > hospitals.id]
   name varchar
   description text [null]
+  starting_price int
+  ending_price int
+  final_price int [null]
   created_at datetime
   updated_at datetime
 }
@@ -319,6 +322,34 @@ Table payment_intents {
   updated_at datetime
 }
 
+Table refund_requests {
+  id string [pk]
+  booking_id string [ref: > bookings.id] // The service booking being refunded
+  patient_id string [ref: > patient_profiles.id] // The patient requesting the refund
+  payment_intent_id string [ref: > payment_intents.id] // The specific successful payment being refunded
+  amount_cents integer // The amount requested (supports full or partial refunds)
+  reason text // Patient's explanation for requesting the refund
+  status enum [default: 'pending'] // e.g., 'pending', 'approved', 'rejected', 'processed'
+  admin_id string [ref: > admins.id, null] // The admin who reviewed the request
+  admin_note text [null] // Justification for rejection or internal notes on approval
+  created_at datetime
+  updated_at datetime
+  resolved_at datetime [null] // Timestamp for when the admin made the decision
+}
+
+Table stripe_refunds {
+  id string [pk]
+  refund_request_id string [ref: - refund_requests.id, unique, null] // One-to-One. Nullable in case an admin refunds directly via Stripe Dashboard
+  payment_intent_id string [ref: > payment_intents.id] // The original charge being refunded
+  stripe_refund_id varchar [unique] // Stripe's refund ID, e.g., re_123456789
+  amount_cents integer // The actual amount refunded
+  status enum [default: 'pending'] // Maps to Stripe's refund statuses: 'pending', 'succeeded', 'failed', 'canceled'
+  failure_reason varchar [null] // Maps to Stripe's failure_reason if the refund fails
+  receipt_number varchar [null] // Stripe's receipt number for the refund
+  created_at datetime
+  updated_at datetime
+}
+
 // DiagramView Default {
 //   Tables {
 //     users
@@ -330,5 +361,7 @@ Table payment_intents {
 //     bookings
 //     payment_intents
 //     services
+//     refund_requests
+//     stripe_refunds
 //   }
 // }
